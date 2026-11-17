@@ -64,6 +64,7 @@ class AppController extends ChangeNotifier {
   void setBase(String code) => _setPair(code, _quote);
   void setQuote(String code) => _setPair(_base, code);
   void swap() => _setPair(_quote, _base);
+  void setPair(String base, String quote) => _setPair(base, quote);
 
   void _setPair(String base, String quote) {
     if (base == _base && quote == _quote) return;

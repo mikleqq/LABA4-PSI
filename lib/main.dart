@@ -6,6 +6,7 @@ import 'data/frankfurter_client.dart';
 import 'data/rates_cache.dart';
 import 'data/rates_repository.dart';
 import 'ui/converter_screen.dart';
+import 'ui/theme.dart';
 import 'ui/trend_screen.dart';
 
 Future<void> main() async {
@@ -26,17 +27,11 @@ class CurrencyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme(Brightness b) => ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.indigo,
-        brightness: b,
-      ),
-    );
     return MaterialApp(
       title: 'Курсы валют',
       debugShowCheckedModeBanner: false,
-      theme: theme(Brightness.light),
-      darkTheme: theme(Brightness.dark),
+      theme: buildTheme(Brightness.light),
+      darkTheme: buildTheme(Brightness.dark),
       home: HomeShell(controller: controller),
     );
   }
@@ -54,16 +49,9 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  static const _titles = [
-    'Конвертер',
-    'Сравнение за неделю',
-    'Сравнение за месяц',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_titles[_index])),
       body: SafeArea(
         child: IndexedStack(
           index: _index,
@@ -72,12 +60,12 @@ class _HomeShellState extends State<HomeShell> {
             TrendScreen(
               controller: widget.controller,
               days: 7,
-              title: 'Неделя',
+              title: 'За неделю',
             ),
             TrendScreen(
               controller: widget.controller,
               days: 30,
-              title: 'Месяц',
+              title: 'За месяц',
             ),
           ],
         ),
@@ -87,12 +75,15 @@ class _HomeShellState extends State<HomeShell> {
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.currency_exchange),
+            icon: Icon(Icons.currency_exchange_rounded),
             label: 'Конвертер',
           ),
-          NavigationDestination(icon: Icon(Icons.date_range), label: 'Неделя'),
           NavigationDestination(
-            icon: Icon(Icons.calendar_month),
+            icon: Icon(Icons.show_chart_rounded),
+            label: 'Неделя',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.insights_rounded),
             label: 'Месяц',
           ),
         ],

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../data/models.dart';
 import '../domain/period_stats.dart';
 import 'format.dart';
+import 'theme.dart';
 
 /// Line chart of the rate over a period. X is the day offset from [start],
 /// so days without a rate (weekends) show up as gaps in time, not as
@@ -27,17 +28,17 @@ class RateChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final lineColor = switch (stats.trend) {
-      Trend.up => Colors.green.shade600,
-      Trend.down => Colors.red.shade600,
-      Trend.flat => scheme.primary,
-    };
+    final gradient = AppColors.trendGradient(stats.trend);
+    final lineColor = AppColors.trendColor(stats.trend);
     final spread = stats.max.rate - stats.min.rate;
     final pad = spread == 0 ? stats.max.rate * 0.001 : spread * 0.15;
     final totalDays = _x(end);
     final labelEvery = totalDays <= 7 ? 1.0 : 7.0;
+    final weekly = points.length <= 8;
 
     return LineChart(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
       LineChartData(
         minX: 0,
         maxX: totalDays,
@@ -46,13 +47,32 @@ class RateChart extends StatelessWidget {
         lineBarsData: [
           LineChartBarData(
             spots: [for (final p in points) FlSpot(_x(p.date), p.rate)],
-            color: lineColor,
-            barWidth: 3,
-            isCurved: false,
-            dotData: FlDotData(show: points.length <= 31),
+            gradient: LinearGradient(colors: gradient.colors),
+            barWidth: 4,
+            isCurved: true,
+            curveSmoothness: 0.25,
+            preventCurveOverShooting: true,
+            isStrokeCapRound: true,
+            dotData: FlDotData(
+              // Every point on the weekly chart, only the last one monthly.
+              checkToShowDot: (spot, bar) => weekly || spot == bar.spots.last,
+              getDotPainter: (spot, _, bar, i) => FlDotCirclePainter(
+                radius: spot == bar.spots.last ? 6 : 4,
+                color: Theme.of(context).cardTheme.color ?? Colors.white,
+                strokeWidth: 3,
+                strokeColor: lineColor,
+              ),
+            ),
             belowBarData: BarAreaData(
               show: true,
-              color: lineColor.withValues(alpha: 0.12),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  lineColor.withValues(alpha: 0.35),
+                  lineColor.withValues(alpha: 0.0),
+                ],
+              ),
             ),
           ),
         ],
@@ -72,7 +92,14 @@ class RateChart extends StatelessWidget {
             ),
           ],
         ),
-        gridData: const FlGridData(drawVerticalLine: false),
+        gridData: FlGridData(
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (_) => FlLine(
+            color: scheme.outlineVariant.withValues(alpha: 0.5),
+            strokeWidth: 1,
+            dashArray: [4, 6],
+          ),
+        ),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
           topTitles: const AxisTitles(),
