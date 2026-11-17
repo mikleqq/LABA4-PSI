@@ -167,6 +167,7 @@ class _TrendBadge extends StatelessWidget {
       Trend.flat => (Icons.trending_flat, Colors.blueGrey.shade600),
     };
     return Card(
+      elevation: 0,
       color: color.withValues(alpha: 0.12),
       child: ListTile(
         leading: Icon(icon, color: color, size: 36),

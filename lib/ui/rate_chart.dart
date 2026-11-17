@@ -88,7 +88,9 @@ class RateChart extends StatelessWidget {
                 return SideTitleWidget(
                   meta: meta,
                   child: Text(
-                    value.toStringAsFixed(rateDecimals(stats.max.rate)),
+                    value
+                        .toStringAsFixed(rateDecimals(stats.max.rate))
+                        .replaceAll('.', ','),
                     style: const TextStyle(fontSize: 10),
                   ),
                 );
@@ -100,13 +102,18 @@ class RateChart extends StatelessWidget {
               showTitles: true,
               interval: labelEvery,
               reservedSize: 28,
-              getTitlesWidget: (value, meta) => SideTitleWidget(
-                meta: meta,
-                child: Text(
-                  fmtShortDate(start.add(Duration(days: value.round()))),
-                  style: const TextStyle(fontSize: 10),
-                ),
-              ),
+              getTitlesWidget: (value, meta) {
+                // fl_chart always adds a label at maxX; skip it when it is
+                // off the regular step, otherwise it overlaps its neighbour.
+                if (value % labelEvery != 0) return const SizedBox.shrink();
+                return SideTitleWidget(
+                  meta: meta,
+                  child: Text(
+                    fmtShortDate(start.add(Duration(days: value.round()))),
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                );
+              },
             ),
           ),
         ),
