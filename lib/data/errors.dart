@@ -36,7 +36,5 @@ class DataFormatException extends AppException {
 
 /// The response is well-formed but contains no data.
 class EmptyDataException extends AppException {
-  const EmptyDataException([
-    super.message = 'Источник вернул пустой ответ.',
-  ]);
+  const EmptyDataException([super.message = 'Источник вернул пустой ответ.']);
 }

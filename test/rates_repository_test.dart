@@ -59,10 +59,7 @@ void main() {
   });
 
   test('offline with empty cache rethrows NetworkException', () {
-    expect(
-      repo(offline, t1).latest('USD'),
-      throwsA(isA<NetworkException>()),
-    );
+    expect(repo(offline, t1).latest('USD'), throwsA(isA<NetworkException>()));
   });
 
   test('HTTP error maps to SourceException with details', () async {
@@ -82,8 +79,10 @@ void main() {
 
   test('malformed response does not overwrite good cache', () async {
     await repo(ok, t1).latest('USD');
-    final r = await repo((_) async => http.Response('garbage', 200), t2)
-        .latest('USD');
+    final r = await repo(
+      (_) async => http.Response('garbage', 200),
+      t2,
+    ).latest('USD');
     expect(r.fromCache, isTrue);
     expect(r.error, isA<DataFormatException>());
     expect(cache.get(RatesCache.latestKey('USD'))?.savedAt, t1);

@@ -25,8 +25,7 @@ class FrankfurterClient {
 
   Future<String> fetchCurrencies() => _get('/currencies');
 
-  Future<String> fetchLatest(String base) =>
-      _get('/latest', {'base': base});
+  Future<String> fetchLatest(String base) => _get('/latest', {'base': base});
 
   Future<String> fetchTimeSeries({
     required String base,

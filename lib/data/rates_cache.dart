@@ -22,8 +22,7 @@ class RatesCache {
 
   static String currenciesKey() => 'currencies';
   static String latestKey(String base) => 'latest:$base';
-  static String seriesKey(String base, String quote) =>
-      'series:$base:$quote';
+  static String seriesKey(String base, String quote) => 'series:$base:$quote';
 
   Future<void> put(String key, String body, DateTime savedAt) =>
       _prefs.setString(

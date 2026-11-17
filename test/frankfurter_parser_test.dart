@@ -53,9 +53,8 @@ void main() {
 
     test('all rates invalid is EmptyDataException', () {
       expect(
-        () => parser.parseLatest(
-          '{"base":"USD","date":"2026-11-17","rates":{}}',
-        ),
+        () =>
+            parser.parseLatest('{"base":"USD","date":"2026-11-17","rates":{}}'),
         throwsA(isA<EmptyDataException>()),
       );
     });
