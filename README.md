@@ -1,27 +1,29 @@
-# Курсы валют — Лабораторная работа №4
+# Currency Trends — Lab 4
 
-Мобильное приложение под Android на **Flutter (Dart)**: конвертер валют с экранами сравнения курса за неделю и за месяц.
+An Android app built with **Flutter (Dart)**: a currency converter with weekly and monthly exchange-rate comparison screens.
 
-## Возможности
+## Features
 
-- **Конвертер.** Ввод суммы (`100`, `12,5`, `1 500,50`), выбор пары валют, кнопка «поменять местами», прямой и обратный курс.
-- **Сравнение за неделю** (последние 7 календарных дней) и **за месяц** (последние 30 дней). На каждом экране:
-  - линейный график курса по дням, пунктиром отмечено среднее;
-  - минимум и максимум с датами, среднее значение;
-  - изменение за период в единицах валюты и в процентах;
-  - явная тенденция: «Рост», «Падение» или «Без изменений» (порог 0,01 %).
-- **Офлайн-режим.** Последние успешные ответы сохраняются в `SharedPreferences` и переживают перезапуск. Без сети приложение показывает сохранённые данные с плашкой «Офлайн-режим» и датой/временем их получения.
-- **Ошибки** (нет сети, таймаут, HTTP-ошибка, пустой ответ, не-JSON, битые записи) показываются понятным сообщением с кнопкой «Повторить», приложение не падает.
-- Выбранная пара запоминается между запусками. Потяните экран вниз, чтобы обновить данные.
+- **Converter.** Enter an amount (`100`, `12,5`, `1 500,50`), pick a currency pair, swap the currencies, see the direct and inverse rate.
+- **Weekly comparison** (last 7 calendar days) and **monthly comparison** (last 30 days). Each screen shows:
+  - a line chart of the rate by day, with the average marked as a dashed line;
+  - the minimum and maximum with their dates, and the average value;
+  - the change over the period in currency units and in percent;
+  - an explicit trend: rising, falling or no change (threshold 0.01 %).
+- **Offline mode.** The last successful responses are stored in `SharedPreferences` and survive app restarts. Without a network the app shows the saved data with an "offline" banner and the date and time the data was received.
+- **Error handling.** No network, timeout, HTTP error, empty response, non-JSON body and malformed records all produce a clear message with a "Retry" button; the app never crashes.
+- The selected pair is remembered between launches. Pull down on any screen to refresh.
 
-Источник данных — [Frankfurter API](https://frankfurter.dev) (справочные курсы ЕЦБ, бесплатно, без ключа). Подробнее об ограничениях — в [REPORT.md](REPORT.md).
+The UI language is Russian.
 
-## Требования
+Data source: [Frankfurter API](https://frankfurter.dev) — European Central Bank reference rates, free, no API key. Its limitations are described in [REPORT.md](REPORT.md).
 
-- Flutter 3.x (проверено на Flutter 3.47.5 / Dart 3.13.4)
-- Android SDK и эмулятор или устройство с Android
+## Requirements
 
-## Запуск
+- Flutter 3.x (tested with Flutter 3.47.5 / Dart 3.13.4)
+- Android SDK and an emulator or a device running Android
+
+## Run
 
 ```bash
 flutter pub get
@@ -29,48 +31,49 @@ flutter emulators --launch Pixel_8a
 flutter run
 ```
 
-## Тесты
+## Tests
 
-Все unit- и widget-тесты запускаются одной командой:
+All unit and widget tests run with one command:
 
 ```bash
 flutter test
 ```
 
-| Файл | Что проверяется |
+| File | What is tested |
 |---|---|
-| `test/frankfurter_parser_test.dart` | разбор ответов API: валюты, последние курсы, временной ряд; битые записи, пустой ответ, не-JSON |
-| `test/period_stats_test.dart` | минимум, максимум, среднее, абсолютное и процентное изменение, тенденция, пустой набор данных, окно «последние N дней» |
-| `test/validation_test.dart` | валидация суммы и пары валют |
-| `test/rates_repository_test.dart` | кэш, офлайн-фолбэк, переживание перезапуска, HTTP-ошибки |
-| `test/widget_test.dart` | экраны в сборе: конвертация, статистика недели, офлайн без кэша и с кэшем |
+| `test/frankfurter_parser_test.dart` | parsing API responses: currencies, latest rates, time series; malformed records, empty response, non-JSON |
+| `test/period_stats_test.dart` | minimum, maximum, average, absolute and percent change, trend, empty data set, "last N days" window |
+| `test/validation_test.dart` | amount and currency pair validation |
+| `test/rates_repository_test.dart` | cache, offline fallback, surviving a restart, HTTP errors |
+| `test/widget_test.dart` | screens end to end: conversion, weekly stats, offline without and with cache |
 
-## Структура
+## Project structure
 
 ```
 lib/
-  main.dart                  точка входа, нижняя навигация
-  app_controller.dart        выбранная пара, список валют, общий запрос истории
+  main.dart                  entry point, bottom navigation
+  app_controller.dart        selected pair, currency list, shared history request
   data/
-    frankfurter_client.dart  HTTP-запросы, таймаут, ошибки -> исключения
-    frankfurter_parser.dart  разбор JSON в модели
-    rates_cache.dart         постоянный кэш ответов
-    rates_repository.dart    «сначала сеть, потом кэш»
+    frankfurter_client.dart  HTTP requests, timeout, errors -> exceptions
+    frankfurter_parser.dart  JSON -> models
+    rates_cache.dart         persistent response cache
+    rates_repository.dart    network first, cache as fallback
     models.dart, errors.dart
   domain/
-    period_stats.dart        статистика за период и тенденция
-    validation.dart          проверка ввода
+    period_stats.dart        period statistics and trend
+    validation.dart          input validation
   ui/
     converter_screen.dart, trend_screen.dart, rate_chart.dart, ...
 ```
 
-## Git
+## Git workflow
 
-Каждый этап — отдельная ветка, слияние в `main` через Pull Request:
+Each stage of the work has its own branch, merged into `main` through a Pull Request:
 
-| Ветка | Этап |
+| Branch | Stage |
 |---|---|
-| `feature/data-layer` | модели, парсер, HTTP-клиент, кэш, репозиторий |
-| `feature/analytics` | расчёт статистики для экранов сравнения |
-| `feature/ui` | валидация, экраны конвертера, недели и месяца |
-| `docs/report` | README и REPORT.md |
+| `feature/data-layer` | models, parser, HTTP client, cache, repository |
+| `feature/analytics` | statistics for the comparison screens |
+| `feature/ui` | validation, converter, weekly and monthly screens |
+| `docs/report` | README and REPORT.md |
+| `feature/visual-redesign` | custom theme, gradients, currency picker, new chart style |
